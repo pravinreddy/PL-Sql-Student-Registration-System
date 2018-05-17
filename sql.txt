@@ -1,0 +1,21 @@
+1) select concat(c.dept_code, c.course#) as course_id, r.title from classes c join
+courses r on c.course#=r.course# and c.dept_code=r.dept_code where semester = 'Spring' and year = 2018;
+
+
+2) select firstname from students s join(select e.sid from enrollments e join classes c on e.classid=c.classid where c.dept_code='CS' intersect select e.sid from enrollments e join classes c on e.classid=c.classid where c.dept_code='Math') b on s.sid=b.sid;
+
+3) select dept_code, course# from courses MINUS select dept_code, course# from classes where year=2017;
+
+4) select s.sid,s.firstname,s.gpa from students s join(select sid from students where NOT status='graduate' intersect select sid from enrollments where lgrade='A') b on s.sid = b.sid;
+
+5) select firstname from (select s1.sid,s1.firstname from students s1 join enrollments e on s1.sid=e.sid MINUS select s.sid,s.firstname from students s join(select sid from students intersect select sid from enrollments where lgrade='A')b on s.sid = b.sid);
+
+12) select title from courses cr join(select distinct dept_code,course# from classes c join(select classid from enrollments where sid='B001' MINUS select classid from enrollments where sid='B002') b on c.classid=b.classid) d on cr.dept_code=d.dept_code and cr.course#=d.course#;
+
+14) select dept_code,course#,semester,year from classes group by dept_code,course#,semester,year having count(*)>=2;
+
+16) select cr.dept_code,cr.course#,cr.title, NVL(b.lgrade,'to be assigned') as grade from courses cr join(select dept_code,course#,a.lgrade from classes c join(select classid, lgrade from enrollments where sid='B003') a on c.classid=a.classid) b on cr.dept_code=b.dept_code and cr.course#=b.course#;
+
+
+18) select s.sid, firstname, nvl(credits,0) from students s left join (select a.sid, sum(credits) as credits from course_credit cc join(select distinct sid, course# from (select sid, course#, lgrade from classes c join enrollments e on c.classid = e.classid where e.lgrade is not null)) a on a.course# = cc.course# group by a.sid) t on t.sid=s.sid;
+
